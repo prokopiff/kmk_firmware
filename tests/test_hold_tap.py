@@ -220,7 +220,6 @@ class TestHoldTap(unittest.TestCase):
                 (3, False),
             ],
             [
-                {KC.LALT},
                 {KC.LCTL, KC.LALT},
                 {KC.LCTL, KC.LALT, KC.N0},
                 {KC.LCTL, KC.LALT},

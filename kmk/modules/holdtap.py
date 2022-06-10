@@ -191,10 +191,11 @@ class HoldTap(Module):
             del self.key_states[key]
 
     def send_key_buffer(self, keyboard):
-        for (int_coord, key) in self.key_buffer:
+        key_buffer = self.key_buffer
+        self.key_buffer = []
+        for (int_coord, key) in key_buffer:
             new_key = keyboard._find_key_in_map(int_coord)
-            keyboard.resume_process_key(self, new_key, True, int_coord)
-
+            keyboard.pre_process_key(new_key, True, int_coord)
         keyboard._send_hid()
         self.key_buffer.clear()
 
