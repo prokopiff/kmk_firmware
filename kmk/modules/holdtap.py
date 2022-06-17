@@ -31,12 +31,14 @@ class HoldTapKeyMeta:
         prefer_hold=True,
         tap_interrupted=False,
         tap_time=None,
+        repeat=True
     ):
         self.tap = tap
         self.hold = hold
         self.prefer_hold = prefer_hold
         self.tap_interrupted = tap_interrupted
         self.tap_time = tap_time
+        self.repeat = repeat
 
 
 class HoldTap(Module):
@@ -155,11 +157,14 @@ class HoldTap(Module):
         elif state.activated == ActivationType.PRESSED:
             # press and release tap because key released within tap time
             self.ht_activate_tap(key, keyboard, *args, **kwargs)
-            self.ht_deactivate_tap(key, keyboard, *args, **kwargs)
+            keyboard.set_timeout(
+                False, lambda: self.ht_deactivate_tap(key, keyboard, *args, **kwargs)
+            )
             state.activated = ActivationType.RELEASED
             self.send_key_buffer(keyboard)
             # don't delete the key state right now in this case
-            if key.meta.repeat: return keyboard 
+            if key.meta.repeat:
+                return keyboard
         elif state.activated == ActivationType.REPEAT:
             self.ht_deactivate_tap(key, keyboard, *args, **kwargs)
         del self.key_states[key]
