@@ -9,20 +9,20 @@ from kmk.extensions.media_keys import MediaKeys
 from kmk.extensions.peg_oled_Display import Oled,OledDisplayMode,OledReactionType,OledData
 from kmk.extensions.peg_rgb_matrix import Rgb_matrix
 from kmk.handlers.sequences import simple_key_sequence
-from kmk.modules.rapidfire import RapidFire
 from kmk.modules.split import Split, SplitSide, SplitType
 from kmk.modules.sticky_mod import StickyMod
-from kmk.modules.tapdance import TapDance
 import storage
 
+TAP_TIME = 250
+
 keyboard = KMKKeyboard()
-keyboard.modules.append(Layers())
-keyboard.modules.append(ModTap())
+layers = Layers()
+layers.tap_time = TAP_TIME
+keyboard.modules.append(layers)
+mod_tap = ModTap()
+mod_tap.tap_time = TAP_TIME
+keyboard.modules.append(mod_tap)
 keyboard.modules.append(StickyMod())
-keyboard.modules.append(RapidFire())
-tapdance = TapDance()
-tapdance.tap_time = 250
-keyboard.modules.append(tapdance)
 keyboard.extensions.append(MediaKeys())
 
 # oled
@@ -51,42 +51,42 @@ keyboard.keymap = [
         KC.TAB,    KC.Q,  KC.W,  KC.E,    KC.R,     KC.T,                                      KC.Y,     KC.U,    KC.I,     KC.O,   KC.P,      KC.LBRC,
         KC.LCTRL,  KC.A,  KC.S,  KC.D,    KC.F,     KC.G,                                      KC.H,     KC.J,    KC.K,     KC.L,   KC.SCOLON, KC.QUOTE,
         KC.LALT,   KC.Z,  KC.X,  KC.C,    KC.V,     KC.B,     KC.KP_MINUS,        KC.KP_PLUS,  KC.N,     KC.M,    KC.COMMA, KC.DOT, KC.SLASH,  KC.RBRC,
-        KC.LGUI, BSP_LWR,  SPC_LSFT, ENT_RSE,            ENT_RSE,     SPC_RSFT, DEL_LWR, KC.SM(KC.TAB, KC.LCTRL),
+                                 KC.LGUI, BSP_LWR,  SPC_LSFT, ENT_RSE,            ENT_RSE,     SPC_RSFT, DEL_LWR, KC.SM(KC.TAB, KC.LCTRL),
     ],
     [ # 1 Lower
         KC.F1,     KC.F2,      KC.F3,   KC.F4,   KC.F5,   KC.F6,                           KC.F7,   KC.F8,   KC.F9,   KC.F10,  KC.F11,  KC.F12,
         KC.TRNS,   KC.TRNS,    KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
         KC.TRNS,   KC.EXCLAIM, KC.AT,   KC.HASH, KC.DLR,  KC.PERC,                         KC.CIRC, KC.AMPR, KC.ASTR, KC.LPRN, KC.RPRN, KC.UNDS,
         KC.TRNS,   KC.TRNS,    KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.MPRV,       KC.MNXT, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, ENT_ADJ,       ENT_ADJ, KC.TRNS, KC.TRNS, KC.SM(KC.TAB, KC.LALT),
+                                        KC.TRNS, KC.TRNS, KC.TRNS, ENT_ADJ,       ENT_ADJ, KC.TRNS, KC.TRNS, KC.SM(KC.TAB, KC.LALT),
     ],
     [ # 2 Raise
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.PAST, KC.P7,   KC.P8,   KC.P9,   KC.PMNS,                         KC.EQL, KC.HOME, KC.UP,   KC.PGUP, KC.TRNS, KC.TRNS,
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TG(4),
+        KC.TRNS, KC.PAST, KC.P7,   KC.P8,   KC.P9,   KC.PMNS,                         KC.EQL, KC.HOME, KC.UP,   KC.PGUP, KC.TRNS,  KC.TRNS,
         KC.TRNS, KC.PSLS, KC.P4,   KC.P5,   KC.P6,   KC.PPLS,                         KC.TRNS, KC.LEFT, KC.DOWN, KC.RGHT, KC.TRNS, KC.TRNS,
         KC.NLCK, KC.P0,   KC.P1,   KC.P2,   KC.P3,   KC.PDOT, KC.VOLD,       KC.VOLU, KC.TRNS, KC.END,  KC.TRNS, KC.PGDN, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.SM(KC.TAB, KC.LALT),
+                                   KC.TRNS, KC.TRNS, KC.TRNS, KC.ENT,        KC.ENT, KC.TRNS, KC.TRNS, KC.SM(KC.TAB, KC.LALT),
     ],
     [ # 3 Adjust
         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
+                                   KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
     ],
     [ # 4 Game
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
+        KC.TRNS,  KC.TRNS, KC.TRNS, KC.TRNS,  KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.TRNS,  KC.TRNS, KC.TRNS, KC.TRNS,  KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.LSFT,  KC.TRNS, KC.TRNS, KC.TRNS,  KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.LCTRL, KC.TRNS, KC.TRNS, KC.TRNS,  KC.TRNS, KC.TRNS, KC.H,          KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+                                    KC.MO(5), KC.BSPC, KC.SPC,  KC.ENT,        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
     ],
     [ # 5 Game 2
-        KC.TRNS, KC.F1,   KC.F2,   KC.F3, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.TRNS, KC.F1,   KC.F2,   KC.F3,   KC.F4,   KC.F5,                           KC.F6,   KC.F7,   KC.F8,   KC.F9,   KC.F10,  KC.F11,
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.F12,
         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
-        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
+                                   KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
     ],
 ]
 
