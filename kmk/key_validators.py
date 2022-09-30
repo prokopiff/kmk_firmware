@@ -1,4 +1,4 @@
-from kmk.types import KeySeqSleepMeta, LayerKeyMeta, ModTapKeyMeta, UnicodeModeKeyMeta
+from kmk.types import KeySeqSleepMeta, UnicodeModeKeyMeta
 
 
 def key_seq_sleep_validator(ms):
