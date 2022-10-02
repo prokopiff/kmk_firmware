@@ -64,7 +64,7 @@ keyboard.keymap = [
         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TG(4),
         KC.TRNS, KC.PAST, KC.P7,   KC.P8,   KC.P9,   KC.PMNS,                         KC.EQL, KC.HOME, KC.UP,   KC.PGUP, KC.TRNS,  KC.TRNS,
         KC.TRNS, KC.PSLS, KC.P4,   KC.P5,   KC.P6,   KC.PPLS,                         KC.TRNS, KC.LEFT, KC.DOWN, KC.RGHT, KC.TRNS, KC.TRNS,
-        KC.NLCK, KC.P0,   KC.P1,   KC.P2,   KC.P3,   KC.PDOT, KC.VOLD,       KC.VOLU, KC.TRNS, KC.END,  KC.TRNS, KC.PGDN, KC.TRNS, KC.TRNS,
+        KC.NLCK, KC.P0,   KC.P1,   KC.P2,   KC.P3,   KC.PDOT, KC.VOLD,       KC.VOLU, KC.TRNS, KC.END,  KC.PSCR, KC.PGDN, KC.TRNS, KC.TRNS,
                                    KC.TRNS, KC.TRNS, KC.TRNS, KC.ENT,        KC.ENT, KC.TRNS, KC.TRNS, KC.SM(KC.TAB, KC.LALT),
     ],
     [ # 3 Adjust
