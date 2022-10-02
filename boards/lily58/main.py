@@ -13,7 +13,7 @@ from kmk.modules.split import Split, SplitSide, SplitType
 from kmk.modules.sticky_mod import StickyMod
 import storage
 
-TAP_TIME = 250
+TAP_TIME = 200
 
 keyboard = KMKKeyboard()
 layers = Layers()
