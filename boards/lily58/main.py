@@ -1,71 +1,92 @@
-from kb import KMKKeyboard, rgb_pixel_pin
+import storage
 
-from kmk.extensions.ble_split import BLE_Split
-from kmk.extensions.layers import Layers
-from kmk.extensions.rgb import RGB
+from kb import KMKKeyboard
+from kmk.extensions.media_keys import MediaKeys
+from kmk.hid import HIDModes
 from kmk.keys import KC
+from kmk.modules.holdtap import HoldTapRepeat
+from kmk.modules.layers import Layers
+from kmk.modules.modtap import ModTap
+from kmk.modules.split import Split, SplitSide
+from kmk.modules.sticky_mod import StickyMod
+
+TAP_TIME = 200
 
 keyboard = KMKKeyboard()
 
-# Cleaner key names
-_______ = KC.TRNS
-XXXXXXX = KC.NO
+keyboard.debug_enabled = False
 
-LOWER = KC.MO(1)
-RAISE = KC.MO(2)
-ADJUST = KC.LT(3, KC.SPC)
+layers = Layers()
+layers.tap_time = TAP_TIME
 
-RGB_TOG = KC.RGB_TOG
-RGB_HUI = KC.RGB_HUI
-RGB_HUD = KC.RGB_HUI
-RGB_SAI = KC.RGB_SAI
-RGB_SAD = KC.RGB_SAD
-RGB_VAI = KC.RGB_VAI
-RGB_VAD = KC.RGB_VAD
+mod_tap = ModTap()
+mod_tap.tap_time = TAP_TIME
 
-# Adding extensions
-rgb = RGB(pixel_pin=rgb_pixel_pin, num_pixels=27, val_limit=100, hue_default=190, sat_default=100, val_default=5)
+if storage.getmount("/").label[-1] == "L":
+    split_side = SplitSide.LEFT
+else:
+    split_side = SplitSide.RIGHT
+split = Split(split_side = split_side,use_pio=True)
 
-# TODO Comment one of these on each side
-# Left is 0, Right is 1
-split_side = 0
-split_side = 1
-split = BLE_Split(split_side=split_side)
+keyboard.modules.append(layers)
+keyboard.modules.append(mod_tap)
+keyboard.modules.append(StickyMod())
+keyboard.extensions.append(MediaKeys())
+keyboard.modules.append(split)
 
-layers_ext = Layers()
-
-extensions = [layers_ext, split, rgb]
+# Custom keycodes
+BSP_LWR = KC.LT(1, KC.BSPC, prefer_hold=True, repeat=HoldTapRepeat.TAP)
+BSP_ADJ = KC.LT(3, KC.BSPC, prefer_hold=True, repeat=HoldTapRepeat.TAP)
+DEL_LWR = KC.LT(1, KC.DEL, prefer_hold=True, repeat=HoldTapRepeat.TAP)
+SPC_LSFT = KC.MT(KC.SPC, KC.LSFT, prefer_hold=True, repeat=HoldTapRepeat.TAP)
+SPC_RSFT = KC.MT(KC.SPC, KC.RSFT, prefer_hold=True, repeat=HoldTapRepeat.TAP)
+ENT_RSE = KC.LT(2, KC.ENT, prefer_hold=True, repeat=HoldTapRepeat.TAP)
+ENT_ADJ = KC.LT(3, KC.ENT, prefer_hold=True, repeat=HoldTapRepeat.TAP)
 
 keyboard.keymap = [
-    [  #QWERTY
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-        KC.TAB,    KC.Q,    KC.W,    KC.E,    KC.R,    KC.T,                         KC.Y,    KC.U,    KC.I,    KC.O,   KC.P,  KC.BSPC,\
-        KC.LCTL,   KC.A,    KC.S,    KC.D,    KC.F,    KC.G,                         KC.H,    KC.J,    KC.K,    KC.L, KC.SCLN, KC.QUOT,\
-        KC.LSFT,   KC.Z,    KC.X,    KC.C,    KC.V,    KC.B, XXXXXXX,      XXXXXXX,  KC.N,    KC.M, KC.COMM,  KC.DOT, KC.SLSH, KC.RSFT,\
-                                            KC.LGUI,   LOWER,  ADJUST,     KC.ENT,   RAISE,  KC.RALT,
+    [ # 0 Main
+        KC.ESCAPE, KC.N1, KC.N2, KC.N3,   KC.N4,    KC.N5,                                     KC.N6,    KC.N7,   KC.N8,    KC.N9,  KC.N0,     KC.GRAVE,
+        KC.TAB,    KC.Q,  KC.W,  KC.E,    KC.R,     KC.T,                                      KC.Y,     KC.U,    KC.I,     KC.O,   KC.P,      KC.LBRC,
+        KC.LCTRL,  KC.A,  KC.S,  KC.D,    KC.F,     KC.G,                                      KC.H,     KC.J,    KC.K,     KC.L,   KC.SCOLON, KC.QUOTE,
+        KC.LALT,   KC.Z,  KC.X,  KC.C,    KC.V,     KC.B,     KC.KP_MINUS,        KC.KP_PLUS,  KC.N,     KC.M,    KC.COMMA, KC.DOT, KC.SLASH,  KC.RBRC,
+                                 KC.LGUI, BSP_LWR,  SPC_LSFT, ENT_RSE,            ENT_RSE,     SPC_RSFT, DEL_LWR, KC.SM(KC.TAB, KC.LCTRL),
     ],
-    [  #LOWER
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-        KC.ESC,   KC.N1,   KC.N2,   KC.N3,   KC.N4,   KC.N5,                         KC.N6,   KC.N7,  KC.N8,   KC.N9,   KC.N0, KC.BSPC,\
-        KC.LCTL, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        KC.LEFT, KC.DOWN, KC.UP,   KC.RIGHT, XXXXXXX, XXXXXXX,\
-        KC.LSFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,  XXXXXXX,    XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-                                            KC.LGUI,   LOWER,  ADJUST,     KC.ENT,   RAISE,  KC.RALT,
+    [ # 1 Lower
+        KC.F1,     KC.F2,      KC.F3,   KC.F4,   KC.F5,   KC.F6,                           KC.F7,   KC.F8,   KC.F9,   KC.F10,  KC.F11,  KC.F12,
+        KC.TRNS,   KC.TRNS,    KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.TRNS,   KC.EXCLAIM, KC.AT,   KC.HASH, KC.DLR,  KC.PERC,                         KC.CIRC, KC.AMPR, KC.ASTR, KC.LPRN, KC.RPRN, KC.UNDS,
+        KC.TRNS,   KC.TRNS,    KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.MPRV,       KC.MNXT, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+                                        KC.TRNS, KC.TRNS, KC.TRNS, ENT_ADJ,       ENT_ADJ, KC.TRNS, KC.TRNS, KC.SM(KC.TAB, KC.LALT),
     ],
-    [  #RAISE
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-        KC.ESC, KC.EXLM,   KC.AT, KC.HASH,  KC.DLR, KC.PERC,                         KC.CIRC, KC.AMPR, KC.ASTR, KC.LPRN, KC.RPRN, KC.BSPC,\
-        KC.LCTL, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        KC.MINS,  KC.EQL, KC.LCBR, KC.RCBR, KC.PIPE,  KC.GRV,\
-        KC.LSFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   KC.UNDS, KC.PLUS, KC.LBRC, KC.RBRC, KC.BSLS, KC.TILD,\
-                                            KC.LGUI,   LOWER,  ADJUST,     KC.ENT,   RAISE,  KC.RALT,
+    [ # 2 Raise
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TG(4),
+        KC.TRNS, KC.PAST, KC.P7,   KC.P8,   KC.P9,   KC.PMNS,                         KC.EQL, KC.HOME, KC.UP,   KC.PGUP,  KC.MPRV, KC.TRNS,
+        KC.TRNS, KC.PSLS, KC.P4,   KC.P5,   KC.P6,   KC.PPLS,                         KC.VOLU, KC.LEFT, KC.DOWN, KC.RGHT, KC.MPLY, KC.BSLS,
+        KC.NLCK, KC.P0,   KC.P1,   KC.P2,   KC.P3,   KC.PDOT, KC.VOLD,       KC.VOLU, KC.VOLD, KC.END,  KC.PSCR, KC.PGDN, KC.MNXT, KC.TRNS,
+                                   KC.TRNS, KC.TRNS, KC.TRNS, KC.ENT,        KC.ENT,  KC.TRNS, KC.TRNS, KC.SM(KC.TAB, KC.LALT),
     ],
-    [  #ADJUST
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-        RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-        XXXXXXX, RGB_HUD, RGB_SAD, RGB_VAD, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-                                            KC.LGUI,   LOWER,  ADJUST,     KC.ENT,   RAISE,  KC.RALT,
-    ]
+    [ # 3 Adjust
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+                                   KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
+    ],
+    [ # 4 Game
+        KC.TRNS,  KC.TRNS, KC.TRNS, KC.TRNS,  KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.TRNS,  KC.TRNS, KC.TRNS, KC.TRNS,  KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.LSFT,  KC.TRNS, KC.TRNS, KC.TRNS,  KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.LCTRL, KC.TRNS, KC.TRNS, KC.TRNS,  KC.TRNS, KC.TRNS, KC.H,          KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+                                    KC.MO(5), KC.BSPC, KC.SPC,  KC.ENT,        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
+    ],
+    [ # 5 Game 2
+        KC.TRNS, KC.F1,   KC.F2,   KC.F3,   KC.F4,   KC.F5,                           KC.F6,   KC.F7,   KC.F8,   KC.F9,   KC.F10,  KC.F11,
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.F12,
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,                         KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+        KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,
+                                   KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,       KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS
+    ],
 ]
 
 if __name__ == '__main__':
-    keyboard.go()
+    keyboard.go(hid_type=HIDModes.USB)
