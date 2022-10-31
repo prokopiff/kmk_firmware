@@ -2,6 +2,12 @@ import storage
 
 from kb import KMKKeyboard
 from kmk.extensions.media_keys import MediaKeys
+from kmk.extensions.peg_oled_display import (
+    Oled,
+    OledDisplayMode,
+    OledReactionType,
+    OledData
+)
 from kmk.hid import HIDModes
 from kmk.keys import KC
 from kmk.modules.holdtap import HoldTapRepeat
@@ -26,7 +32,21 @@ if storage.getmount("/").label[-1] == "L":
     split_side = SplitSide.LEFT
 else:
     split_side = SplitSide.RIGHT
-split = Split(split_side = split_side,use_pio=True)
+
+flip = split_side == SplitSide.RIGHT
+oled = Oled(
+    OledData(
+        corner_one={0:OledReactionType.STATIC,1:["1 2 3 4 5 6","","","","","","",""]},
+        corner_two={0:OledReactionType.STATIC,1:[" 7 8 Layer","","","","","",""," 7 8 Layer"]},
+        corner_three={0:OledReactionType.LAYER,1:["^","  ^","    ^","      ^","        ^","          ^","",""]},
+        corner_four={0:OledReactionType.LAYER,1:["","","","","",""," ^","   ^"]}
+    ),
+    toDisplay=OledDisplayMode.TXT, flip=flip
+)
+
+keyboard.extensions.append(oled)
+
+split = Split(split_side = split_side, use_pio=True)
 
 keyboard.modules.append(layers)
 keyboard.modules.append(mod_tap)
