@@ -1,3 +1,4 @@
+import random
 import storage
 
 from kb import KMKKeyboard
@@ -33,17 +34,22 @@ if storage.getmount("/").label[-1] == "L":
 else:
     split_side = SplitSide.RIGHT
 
-flip = split_side == SplitSide.RIGHT
-oled = Oled(
-    OledData(
-        corner_one={0:OledReactionType.STATIC,1:["1 2 3 4 5 6","","","","","","",""]},
-        corner_two={0:OledReactionType.STATIC,1:[" 7 8 Layer","","","","","",""," 7 8 Layer"]},
-        corner_three={0:OledReactionType.LAYER,1:["^","  ^","    ^","      ^","        ^","          ^","",""]},
-        corner_four={0:OledReactionType.LAYER,1:["","","","","",""," ^","   ^"]}
-    ),
-    toDisplay=OledDisplayMode.TXT, flip=flip
-)
-
+if split_side == SplitSide.LEFT:
+    oled = Oled(
+        OledData(
+            corner_one={0:OledReactionType.STATIC,1:["1 2 3 4 5 6","","","","","","",""]},
+            corner_two={0:OledReactionType.STATIC,1:[" 7 8 Layer","","","","","",""," 7 8 Layer"]},
+            corner_three={0:OledReactionType.LAYER,1:["^","  ^","    ^","      ^","        ^","          ^","",""]},
+            corner_four={0:OledReactionType.LAYER,1:["","","","","",""," ^","   ^"]}
+        ),
+        toDisplay=OledDisplayMode.TXT, flip=False
+    )
+else:
+    image = random.choice(["cats1.bmp","cats2.bmp"])
+    oled = Oled(
+        OledData(image={0:OledReactionType.STATIC,1:[image]}),
+        toDisplay=OledDisplayMode.IMG, flip=False
+    )
 keyboard.extensions.append(oled)
 
 split = Split(split_side = split_side, use_pio=True)
