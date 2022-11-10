@@ -18,6 +18,7 @@ from kmk.modules.split import Split, SplitSide
 from kmk.modules.sticky_mod import StickyMod
 
 TAP_TIME = 200
+OLED_SLEEP_TIMEOUT = 30000
 
 keyboard = KMKKeyboard()
 
@@ -42,13 +43,19 @@ if split_side == SplitSide.LEFT:
             corner_three={0:OledReactionType.LAYER,1:["^","  ^","    ^","      ^","        ^","          ^","",""]},
             corner_four={0:OledReactionType.LAYER,1:["","","","","",""," ^","   ^"]}
         ),
-        toDisplay=OledDisplayMode.TXT, flip=False
+        toDisplay=OledDisplayMode.TXT, flip=False,
+        sleep_timeout=OLED_SLEEP_TIMEOUT,
+        set_timeout=keyboard.set_timeout,
+        cancel_timeout=keyboard.cancel_timeout
     )
 else:
     image = random.choice(["cats1.bmp","cats2.bmp"])
     oled = Oled(
         OledData(image={0:OledReactionType.STATIC,1:[image]}),
-        toDisplay=OledDisplayMode.IMG, flip=False
+        toDisplay=OledDisplayMode.IMG, flip=False,
+        sleep_timeout=OLED_SLEEP_TIMEOUT,
+        set_timeout=keyboard.set_timeout,
+        cancel_timeout=keyboard.cancel_timeout
     )
 keyboard.extensions.append(oled)
 

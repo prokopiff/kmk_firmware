@@ -297,9 +297,9 @@ class KMKKeyboard:
 
         return (timeout_key, idx)
 
-    def cancel_timeout(self, timeout_key: int) -> None:
+    def cancel_timeout(self, timeout_key: Tuple[int, int]) -> None:
         try:
-            self._timeouts[timeout_key[0]][timeout_key[1]] = None
+            del self._timeouts[timeout_key[0]][timeout_key[1]]
         except (KeyError, IndexError):
             if debug.enabled:
                 debug(f'no such timeout: {timeout_key}')

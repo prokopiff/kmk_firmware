@@ -1,3 +1,8 @@
+try:
+    from typing import Callable, Optional, Tuple
+except ImportError:
+    pass
+
 import busio
 import gc
 
@@ -8,6 +13,9 @@ from adafruit_display_text import label
 
 from kmk.extensions import Extension
 
+from kmk.utils import Debug
+
+debug = Debug(__name__)
 
 class OledDisplayMode:
     TXT = 0
@@ -42,6 +50,9 @@ class Oled(Extension):
         oWidth=128,
         oHeight=32,
         flip: bool = False,
+        sleep_timeout: int = 0,
+        set_timeout: Callable[[int, Callable[[None], None]], Tuple[int, int]] = None,
+        cancel_timeout: Callable[[Tuple[int, int]], None] = None,
     ):
         displayio.release_displays()
         self.rotation = 180 if flip else 0
@@ -50,6 +61,10 @@ class Oled(Extension):
         self._width = oWidth
         self._height = oHeight
         self._prevLayers = 0
+        self._sleep_timeout = sleep_timeout
+        self._set_timeout = set_timeout
+        self._cancel_timeout = cancel_timeout
+        self._timer: Tuple[int, int] = ()
         gc.collect()
 
     def returnCurrectRenderText(self, layer, singleView):
@@ -136,23 +151,33 @@ class Oled(Extension):
             self.renderOledTextLayer(0)
         if self._toDisplay == OledDisplayMode.IMG:
             self.renderOledImgLayer(0)
-        return
 
     def before_matrix_scan(self, sandbox):
         if sandbox.active_layers[0] != self._prevLayers:
             self._prevLayers = sandbox.active_layers[0]
             self.updateOLED(sandbox)
-        return
 
     def after_matrix_scan(self, sandbox):
+        if not sandbox.matrix_update:
+            return
 
-        return
+        if not self._sleep_timeout:
+            return
+
+        if not self._display.is_awake:
+            self._display.wake()
+
+        self._cancel_timeout(self._timer)
+        self._timer = self._set_timeout(self._sleep_timeout, self._sleep)
 
     def before_hid_send(self, sandbox):
         return
 
     def after_hid_send(self, sandbox):
         return
+
+    def _sleep(self):
+        self._display.sleep()
 
     def on_powersave_enable(self, sandbox):
         return
