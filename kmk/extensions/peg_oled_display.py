@@ -146,11 +146,15 @@ class Oled(Extension):
             width=self._width,
             height=self._height,
             rotation=self.rotation,
+            brightness=0.1,
         )
         if self._toDisplay == OledDisplayMode.TXT:
             self.renderOledTextLayer(0)
         if self._toDisplay == OledDisplayMode.IMG:
             self.renderOledImgLayer(0)
+
+        self._timer = self._set_timeout(self._sleep_timeout, self._sleep)
+
 
     def before_matrix_scan(self, sandbox):
         if sandbox.active_layers[0] != self._prevLayers:

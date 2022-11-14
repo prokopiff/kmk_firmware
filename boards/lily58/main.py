@@ -49,7 +49,7 @@ if split_side == SplitSide.LEFT:
         cancel_timeout=keyboard.cancel_timeout
     )
 else:
-    image = random.choice(["cats1.bmp","cats2.bmp"])
+    image = random.choice(["cats1.bmp","cats2.bmp","lulu.bmp","lulu1.bmp"])
     oled = Oled(
         OledData(image={0:OledReactionType.STATIC,1:[image]}),
         toDisplay=OledDisplayMode.IMG, flip=False,
