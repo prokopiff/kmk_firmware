@@ -12,6 +12,8 @@ import terminalio
 from adafruit_display_text import label
 
 from kmk.extensions import Extension
+from kmk.handlers.stock import passthrough as handler_passthrough
+from kmk.keys import make_key
 
 from kmk.utils import Debug
 
@@ -64,7 +66,16 @@ class Oled(Extension):
         self._sleep_timeout = sleep_timeout
         self._set_timeout = set_timeout
         self._cancel_timeout = cancel_timeout
-        self._timer: Tuple[int, int] = ()
+        self._timer: Tuple[int, int] = (-1, -1)
+        self._brightness_step = 0.1
+
+        make_key(
+            names=("OLED_BRI",), on_press=self._oled_bri, on_release=handler_passthrough
+        )
+        make_key(
+            names=("OLED_BRD",), on_press=self._oled_brd, on_release=handler_passthrough
+        )
+
         gc.collect()
 
     def returnCurrectRenderText(self, layer, singleView):
@@ -188,3 +199,24 @@ class Oled(Extension):
 
     def on_powersave_disable(self, sandbox):
         return
+
+
+    def _oled_bri(self, *args, **kwargs):
+        self._display.brightness = (
+            self._display.brightness + self._brightness_step
+            if self._display.brightness + self._brightness_step <= 1.0
+            else 1.0
+        )
+        self._brightness = self._display.brightness  # Save current brightness
+        self._display.refresh()
+        debug(f"New br: {self._display.brightness}")
+
+    def _oled_brd(self, *args, **kwargs):
+        self._display.brightness = (
+            self._display.brightness - self._brightness_step
+            if self._display.brightness - self._brightness_step >= 0.1
+            else 0.1
+        )
+        self._brightness = self._display.brightness
+        self._display.refresh()
+        debug(f"New br: {self._display.brightness}")
