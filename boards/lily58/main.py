@@ -75,12 +75,13 @@ SPC_LSFT = KC.MT(KC.SPC, KC.LSFT, prefer_hold=True, repeat=HoldTapRepeat.TAP)
 SPC_RSFT = KC.MT(KC.SPC, KC.RSFT, prefer_hold=True, repeat=HoldTapRepeat.TAP)
 ENT_RSE = KC.LT(2, KC.ENT, prefer_hold=True, repeat=HoldTapRepeat.TAP)
 ENT_ADJ = KC.LT(3, KC.ENT, prefer_hold=True, repeat=HoldTapRepeat.TAP)
+CTL_TAB = KC.MT(KC.TAB, KC.LCTRL, prefer_hold=True, repeat=HoldTapRepeat.TAP)
 
 keyboard.keymap = [
     [ # 0 Main
         KC.ESCAPE, KC.N1, KC.N2, KC.N3,   KC.N4,    KC.N5,                                     KC.N6,    KC.N7,   KC.N8,    KC.N9,  KC.N0,     KC.GRAVE,
         KC.TAB,    KC.Q,  KC.W,  KC.E,    KC.R,     KC.T,                                      KC.Y,     KC.U,    KC.I,     KC.O,   KC.P,      KC.LBRC,
-        KC.LCTRL,  KC.A,  KC.S,  KC.D,    KC.F,     KC.G,                                      KC.H,     KC.J,    KC.K,     KC.L,   KC.SCOLON, KC.QUOTE,
+        CTL_TAB,   KC.A,  KC.S,  KC.D,    KC.F,     KC.G,                                      KC.H,     KC.J,    KC.K,     KC.L,   KC.SCOLON, KC.QUOTE,
         KC.LALT,   KC.Z,  KC.X,  KC.C,    KC.V,     KC.B,     KC.KP_MINUS,        KC.KP_PLUS,  KC.N,     KC.M,    KC.COMMA, KC.DOT, KC.SLASH,  KC.RBRC,
                                  KC.LGUI, BSP_LWR,  SPC_LSFT, ENT_RSE,            ENT_RSE,     SPC_RSFT, DEL_LWR, KC.SM(KC.TAB, KC.LCTRL),
     ],
