@@ -49,6 +49,7 @@ class KMKKeyboard:
     #####
     # Internal State
     keys_pressed = set()
+    axes = set()
     _coordkeys_pressed = {}
     hid_type = HIDModes.USB
     secondary_hid_type = None
@@ -88,6 +89,7 @@ class KMKKeyboard:
                 f'  unicode_mode={self.unicode_mode}, ',
                 f'_hid_helper={self._hid_helper},\n',
                 f'  keys_pressed={self.keys_pressed},\n',
+                f'  axes={self.axes},\n',
                 f'  _coordkeys_pressed={self._coordkeys_pressed},\n',
                 f'  hid_pending={self.hid_pending}, ',
                 f'active_layers={self.active_layers}, ',
@@ -102,14 +104,23 @@ class KMKKeyboard:
             debug(f'keys_pressed={self.keys_pressed}')
 
     def _send_hid(self) -> None:
-        if self._hid_send_enabled:
-            hid_report = self._hid_helper.create_report(self.keys_pressed)
-            try:
-                hid_report.send()
-            except KeyError as e:
-                if debug.enabled:
-                    debug(f'HidNotFound(HIDReportType={e})')
+        if not self._hid_send_enabled:
+            return
+
+        if self.axes and debug.enabled:
+            debug(f'axes={self.axes}')
+
+        self._hid_helper.create_report(self.keys_pressed, self.axes)
+        try:
+            self._hid_helper.send()
+        except KeyError as e:
+            if debug.enabled:
+                debug(f'HidNotFound(HIDReportType={e})')
+
         self.hid_pending = False
+
+        for axis in self.axes:
+            axis.move(self, 0)
 
     def _handle_matrix_report(self, kevent: KeyEvent) -> None:
         if kevent is not None:
@@ -375,6 +386,10 @@ class KMKKeyboard:
         self._hid_helper = self._hid_helper(**self._go_args)
         self._hid_send_enabled = True
 
+    def _deinit_hid(self) -> None:
+        self._hid_helper.clear_all()
+        self._hid_helper.send()
+
     def _init_matrix(self) -> None:
         if self.matrix is None:
             if debug.enabled:
@@ -487,8 +502,12 @@ class KMKKeyboard:
 
     def go(self, hid_type=HIDModes.USB, secondary_hid_type=None, **kwargs) -> None:
         self._init(hid_type=hid_type, secondary_hid_type=secondary_hid_type, **kwargs)
-        while True:
-            self._main_loop()
+        try:
+            while True:
+                self._main_loop()
+        finally:
+            debug('Unexpected error: cleaning up')
+            self._deinit_hid()
 
     def _init(
         self,
