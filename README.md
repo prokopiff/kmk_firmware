@@ -9,10 +9,15 @@ KMK is a feature-rich and beginner-friendly firmware for computer keyboards
 written and configured in
 [CircuitPython](https://github.com/adafruit/circuitpython).
 
+## Support
+
 For asynchronous support and chatter about KMK, [join our Zulip
-community](https://kmkfw.zulipchat.com)! In particular, swing by the Zulip chat
-*before* opening a GitHub Issue about configuration, documentation, etc.
-concerns.
+community](https://kmkfw.zulipchat.com)!
+
+If you ask for help in chat or open a bug report, if possible
+make sure your copy of KMK is up-to-date.
+In particular, swing by the Zulip chat *before* opening a GitHub Issue about
+configuration, documentation, etc. concerns.
 
 > The former Matrix and Discord rooms once linked to in this README are no
 > longer officially supported, please do not use them!
@@ -44,7 +49,7 @@ Our getting started guide can be found
 
 ## Code Style
 
-KMK uses [Black](https://github.com/psf/black) with a Python 3.6 target and,
+KMK uses [Black](https://github.com/psf/black) with a Python 3.11 target and,
 [(controversially?)](https://github.com/psf/black/issues/594) single quotes.
 Further code styling is enforced with isort and flake8 with several plugins.
 `make fix-isort fix-formatting` before a commit is a good idea, and CI will fail
